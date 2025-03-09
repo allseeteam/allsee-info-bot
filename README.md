@@ -21,7 +21,7 @@ This bot is used to provide information about AllSee products and services but c
     git clone https://github.com/allseeteam/allsee-info-bot
     cd allsee-info-bot
     ```
-2. Create a virtual environment, activate it and install dependencies
+2. Create a virtual environment, activate it and install dependencies. Tested on python 3.11.11
     ```shell
     python -m venv venv
     source venv/bin/activate
