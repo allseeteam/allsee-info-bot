@@ -1,0 +1,6 @@
+/venv
+/data
+/env/.env
+/notebooks
+*__pycache__*
+/.idea
