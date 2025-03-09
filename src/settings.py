@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class TelegramBotSettings(BaseSettings):
     """
-    Class for storing telegram bot settings.
+    Class for storing telegram bot settings. Read more about pydantic_settings here: https://docs.pydantic.dev/latest/concepts/pydantic_settings/.
 
     Attributes:
         token (str): Telegram bot token.

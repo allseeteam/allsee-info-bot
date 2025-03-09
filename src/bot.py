@@ -1,7 +1,6 @@
 import logging
 
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
 
 from settings import telegram_bot_settings
 from handlers import (

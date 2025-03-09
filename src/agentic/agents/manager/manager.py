@@ -6,7 +6,7 @@ from .tools.telegram import send_document_to_user
 from .tools.retrieval import retrieval_tool
 from ...llm import llm
 from langgraph.prebuilt import create_react_agent
-from langgraph.graph.state import CompiledStateGraph
+from langgraph.graph.state import CompiledGraph
 
 
 MANAGER_AGENT_SYSTEM_PROMPT: str = (
@@ -65,12 +65,15 @@ MANAGER_AGENT_SYSTEM_PROMPT: str = (
 )
 
 
-# Создаем агента-менеджера
+# Create the manager agent using prebuild create_react_agent. Reade more about it here: https://langchain-ai.github.io/langgraph/reference/prebuilt/#langgraph.prebuilt.chat_agent_executor.create_react_agent
+# For more flexible tool execution and node routing inside agent it is bette to implement your own ToolNode and ToolEdge. Here are som good starting points:
+# - https://langchain-ai.github.io/langgraph/tutorials/introduction/#part-2-enhancing-the-chatbot-with-tools
+# - https://langchain-ai.github.io/langgraph/how-tos/tool-calling/
 manager_tools: List[StructuredTool] = [
     send_document_to_user,
     retrieval_tool,
 ]
-manager_agent: CompiledStateGraph = create_react_agent(
+manager_agent: CompiledGraph = create_react_agent(
     model=llm,
     prompt=MANAGER_AGENT_SYSTEM_PROMPT,
     tools=manager_tools,

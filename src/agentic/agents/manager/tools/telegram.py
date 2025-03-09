@@ -9,20 +9,20 @@ from langchain_core.runnables.config import RunnableConfig
 
 
 class DocumentReply(BaseModel):
-    """Сообщение с прикреплённым документом, которое ассистент отправляет пользователю"""
+    """Pydantic model for sending a document to a user"""
     reply_document_path: str = Field(description="Путь к документу, который будет отправлен пользователю")
     reply_text: Optional[str] = Field(description="Текст сообщения для пользователя, который будет отправлен вместе с документом", default=None)
 
 
 class ReplyResult(BaseModel):
-    """Результат отправки сообщения пользователю"""
+    """Result of sending a message to a user"""
     success: bool = Field(description="Флаг успешной отправки сообщения")
     error: str | None = Field(description="Текст ошибки, если отправка не удалась")
 
 
 async def send_document_to_user(reply_document_path: str, reply_text: Optional[str], config: RunnableConfig) -> ReplyResult:
-    """Отправить пользователю текстовое сообщение"""
-    # Пробуем получить update из InjectedState и отправить документ пользователю
+    """A tool for sending a document to a user"""
+    # Try to get the update from InjectedState and send the document to the user
     try:
         update: Update = config["configurable"].get("update")
         print("\n\n-----")
@@ -35,17 +35,17 @@ async def send_document_to_user(reply_document_path: str, reply_text: Optional[s
             parse_mode="HTML",
         )
 
-    # Обрабатываем ошибку, если не удалось отправить сообщение
+    # Handling error if sending the message fails
     except Exception as e:
         logging.error(f"Failed to send message to user: {e}")
         return ReplyResult(success=False, error=str(e))
     
-    # Возвращаем результат успешной отправки сообщения
+    # Returning success result
     finally:
         return ReplyResult(success=True, error=None)
 
 
-# Создаём tool для отправки документа пользователю
+# Creating a structured tool for sending a document to a user
 send_document_to_user_tool = StructuredTool.from_function(
     coroutine=send_document_to_user,
     name="SendDocumentToUser",

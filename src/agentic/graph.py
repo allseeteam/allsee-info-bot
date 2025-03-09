@@ -5,13 +5,13 @@ from .agents import manager_agent
 from .memory import memory
 
 
-# Создаем граф состояний
+# Create a state graph for the agents
 graph_builder = StateGraph(MessagesState)
 
-# Добавляем узлы
+# Add manager_agent to the graph
 graph_builder.add_node("manager", manager_agent)
-# Направляем на обработку manager_agent, если мы в начале
+# Add entry point to the graph
 graph_builder.add_edge(START, "manager")
 
-# Компилируем граф
+# Compile the graph with a checkpointer
 graph: CompiledStateGraph = graph_builder.compile(checkpointer=memory)

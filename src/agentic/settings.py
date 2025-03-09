@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class AgentsSettings(BaseSettings):
     """
-    Class for storing agents settings.
+    Class for storing agents settings. Read more about pydantic_settings here: https://docs.pydantic.dev/latest/concepts/pydantic_settings/.
 
     Attributes:
         openai_api_key (str): OpenAI API key.
