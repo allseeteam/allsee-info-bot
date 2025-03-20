@@ -46,16 +46,14 @@ This bot is used to provide information about AllSee products and services but c
     You can use any number of parts, but it should be in `.md` format. You can also use other formats like `.txt`, but you will need to update the code in [retrieval.py](src/agentic/agents/manager/tools/retrieval.py) file.
 5. Start the bot
     ```shell
-    python src/bot.py
+    python -m src.bot
     ```
 ## Work to be done
-1. For now, bot is using SYNC RAM-saver to store all conversations in memory. This is not optimal for production use. In the future we need to implement async saver based on SQLite or PostgreSQL. It can be done using prebuild langgraph instruments like [AsyncSqliteSaver](https://langchain-ai.github.io/langgraph/reference/checkpoints/#langgraph.checkpoint.sqlite.aio.AsyncSqliteSaver) or [AsyncPostgresSaver](https://langchain-ai.github.io/langgraph/reference/checkpoints/#langgraph.checkpoint.postgres.aio.AsyncPostgresSaver).
-2. Some parts of the code are using global variables like llm from [llm.py](src/agentic/llm.py) and other staff. In the future we need to make sure that all global variables are safe from changes from other threads and make sure that methods from globally used objects like llm and graph are not-blocking (e.g. using async methods).
-3. For now setup of Chroma is hardcoded in [retrieval.py](src/agentic/agents/manager/tools/retrieval.py). In the future we need to make config for providing documents which we want to use for retrieval. For now we are using Chroma with default settings and no documents as well as other configurations.
-4. We need to make our agents more configurable. Create separate config files for storing system prompts and other settings.
-5. We need to add agent for processing structured data like tables.
-6. We need to properly handle all runtime errors and exceptions.
-7. We need to properly handle non-parseable formating from llm.
+1. Some parts of the code are using global variables like llm from [llm.py](src/agentic/llm.py) and other staff. In the future we need to make sure that all global variables are safe from changes from other threads and make sure that methods from globally used objects like llm and graph are not-blocking (e.g. using async methods).
+2. For now setup of Chroma is hardcoded in [retrieval.py](src/agentic/agents/manager/tools/retrieval.py). In the future we need to make config for providing documents which we want to use for retrieval. For now we are using Chroma with default settings and no documents as well as other configurations.
+3. We need to make our agents more configurable. Create separate config files for storing system prompts and other settings.
+4. We need to add agent for processing structured data like tables.
+5. We need to properly handle all runtime errors and exceptions.
 
 # How you can customize this bot
 1. You can change LLM used in [llm.py](src/agentic/llm.py)
