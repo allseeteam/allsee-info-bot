@@ -1,3 +1,4 @@
+aiosqlite==0.21.0
 annotated-types==0.7.0
 anyio==4.8.0
 asgiref==3.8.1
@@ -41,7 +42,9 @@ langchain-core==0.3.43
 langchain-openai==0.3.8
 langchain-text-splitters==0.3.6
 langgraph==0.3.5
-langgraph-checkpoint==2.0.18
+langgraph-checkpoint==2.0.21
+langgraph-checkpoint-postgres==2.0.19
+langgraph-checkpoint-sqlite==2.0.6
 langgraph-prebuilt==0.1.2
 langgraph-sdk==0.1.55
 langsmith==0.3.13
@@ -70,6 +73,8 @@ overrides==7.7.0
 packaging==24.2
 posthog==3.19.0
 protobuf==5.29.3
+psycopg==3.2.6
+psycopg-pool==3.2.6
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
 pydantic==2.10.6
