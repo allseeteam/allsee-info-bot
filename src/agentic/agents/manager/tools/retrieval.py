@@ -4,7 +4,8 @@ from langchain_text_splitters import MarkdownHeaderTextSplitter
 from langchain.tools.retriever import create_retriever_tool
 import os
 
-from ....settings import agents_settings
+# Add the project root to the Python pathd
+from .....settings import settings
 
 
 def load_and_split_markdown():
@@ -56,7 +57,11 @@ if has_existing_db:
     vectorstore = Chroma(
         persist_directory=chroma_dir,
         collection_name="rag-chroma",
-        embedding_function=OpenAIEmbeddings(api_key=agents_settings.openai_api_key),
+        embedding_function=OpenAIEmbeddings(
+            api_key=settings.embedder.API_KEY,
+            model=settings.embedder.MODEL,
+            base_url=settings.embedder.BASE_API,
+        ),
     )
     doc_count = vectorstore._collection.count()
     print(f"Loaded vectorstore with {doc_count} documents")
@@ -69,7 +74,11 @@ if has_existing_db:
             documents=split_docs,
             collection_name="rag-chroma",
             persist_directory=chroma_dir,
-            embedding=OpenAIEmbeddings(api_key=agents_settings.openai_api_key),
+            embedding=OpenAIEmbeddings(
+                api_key=settings.embedder.API_KEY,
+                model=settings.embedder.MODEL,
+                base_url=settings.embedder.BASE_API,
+            ),
         )
         print(f"Created new vectorstore with {vectorstore._collection.count()} documents")
 else:
@@ -79,7 +88,11 @@ else:
         documents=split_docs,
         collection_name="rag-chroma",
         persist_directory=chroma_dir,
-        embedding=OpenAIEmbeddings(api_key=agents_settings.openai_api_key),
+        embedding=OpenAIEmbeddings(
+            api_key=settings.embedder.API_KEY,
+            model=settings.embedder.MODEL,
+            base_url=settings.embedder.BASE_API,
+        ),
     )
     print(f"Created new vectorstore with {vectorstore._collection.count()} documents")
 
