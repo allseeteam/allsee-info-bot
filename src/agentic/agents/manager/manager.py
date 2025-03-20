@@ -46,10 +46,10 @@ MANAGER_AGENT_SYSTEM_PROMPT: str = (
     Используйте, если пользователь хочет внедрить ИИ, но не знает, какие решения подходят для его сферы или задачи.  
 
     **Контакты и полезные ссылки**:  
-    - Сайт для заявки на консультацию или решение: https://allsee.team 
+    - Сайт для заявки на консультацию или решение: https://allsee.team/?utm_source=bot 
     - Telegram аккаунт менеджера для заказа решения: https://t.me/manager_allsee
     - Электронная почта для обращения: info@allsee.team  
-    - Telegram-канал AllSee: https://t.me/allseeteam  
+    - Telegram-канал AllSee: https://t.me/+YmkVoWO1wGs4NTA6
     - Страница на VC.ru: https://vc.ru/u/3797479-egor-krasilnikov  
     - Страница на Habr: https://habr.com/ru/users/allseeteam/  
     - Блог AllSee: https://allsee.team/blog  
