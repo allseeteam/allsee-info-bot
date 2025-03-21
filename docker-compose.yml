@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    env_file:
+      - ./env/.env
+    volumes:
+      - ${CHECKPOINTER_DB_URI:-./data/graph-memory/memory.sqlite3}:/app/${CHECKPOINTER_DB_URI:-data/graph-memory/memory.sqlite3}
+      - ./data:/app/data
+    restart: unless-stopped
+    init: true

@@ -48,6 +48,35 @@ This bot is used to provide information about AllSee products and services but c
     ```shell
     python -m src.bot
     ```
+
+## Docker Setup
+You can also run the bot using Docker:
+
+1. Make sure you have Docker and Docker Compose installed:
+   ```shell
+   # Arch Linux
+   sudo pacman -S docker docker-compose
+   sudo systemctl enable docker
+   sudo systemctl start docker
+   sudo usermod -aG docker $USER  # Log out and back in for this to take effect
+   ```
+
+2. Build and start the container:
+   ```shell
+   docker-compose up --build -d
+   ```
+
+3. View logs:
+   ```shell
+   docker-compose logs -f
+   ```
+
+4. Stop the container:
+   ```shell
+   docker-compose down
+   ```
+
+The bot will use the environment variables from `./env/.env` and the SQLite database will be persisted in the location specified by `CHECKPOINTER_DB_URI` in your `.env` file.
 ## Work to be done
 1. Some parts of the code are using global variables like llm from [llm.py](src/agentic/llm.py) and other staff. In the future we need to make sure that all global variables are safe from changes from other threads and make sure that methods from globally used objects like llm and graph are not-blocking (e.g. using async methods).
 2. For now setup of Chroma is hardcoded in [retrieval.py](src/agentic/agents/manager/tools/retrieval.py). In the future we need to make config for providing documents which we want to use for retrieval. For now we are using Chroma with default settings and no documents as well as other configurations.
