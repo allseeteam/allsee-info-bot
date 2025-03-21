@@ -1,41 +1,19 @@
 import logging
 import asyncio
 import signal
+from typing import Optional
 
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, Application
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver, AsyncConnectionPool
+from langgraph.graph import MessagesState, StateGraph, START
+from langgraph.graph.state import CompiledStateGraph
 
 from src.settings import settings
-from src.agentic.graph_manager import graph_manager
+from src.agentic.agents import manager_agent
 from src.handlers import (
     handle_start,
     handle_user_message,
 )
-
-
-async def cleanup_graph(application: Application) -> None:
-    """Cleanup graph during application shutdown"""
-    if hasattr(application, 'graph_manager'):
-        await graph_manager.__aexit__(None, None, None)
-        application.graph_manager = None
-
-
-async def shutdown(app: Application, signal: str = None):
-    """Cleanup and shutdown the application"""
-    logging.info(f"Received signal: {signal}, shutting down...")
-
-    try:
-        # First stop the updater
-        if app.updater and app.updater.running:
-            await app.updater.stop()
-        # Then stop the application
-        if app.running:
-            await app.stop()
-        # Finally cleanup the graph
-        await cleanup_graph(app)
-
-    except Exception as e:
-        logging.error(f"Error during shutdown: {e}")
-        raise
 
 
 async def setup_and_start_bot() -> None:
@@ -47,13 +25,19 @@ async def setup_and_start_bot() -> None:
     logging.info("Creating application")
     app = ApplicationBuilder().token(settings.telegram_bot.TOKEN).build()
 
-    # Initialize graph before starting bot
-    logging.info("Initializing graph manager")
-    await graph_manager.initialize(postgres_conn_string=settings.checkpointer.POSGRES_CONNECTION_STRING)
-
-    # Set up graph manager context
-    async with graph_manager as manager:
-        app.graph_manager = manager
+    # Create state graph
+    logging.info("Creating state graph")
+    graph_builder = StateGraph(MessagesState)
+    graph_builder.add_node("manager", manager_agent)
+    graph_builder.add_edge(START, "manager")
+    
+    # Set up the checkpointer, compile the graph, and add it to the application
+    connection_kwargs = {"autocommit": True}
+    async with AsyncConnectionPool(conninfo=settings.checkpointer.POSGRES_CONNECTION_STRING, kwargs=connection_kwargs) as pool:
+        postgres_saver = AsyncPostgresSaver(pool)
+        await postgres_saver.setup()
+        compiled_graph = graph_builder.compile(checkpointer=postgres_saver)
+        app.graph = compiled_graph
 
         # Add handlers
         logging.info("Adding handlers")
@@ -76,7 +60,6 @@ async def setup_and_start_bot() -> None:
             
         finally:
             logging.info("Shutting down...")
-            await shutdown(app)
 
 
 def main():

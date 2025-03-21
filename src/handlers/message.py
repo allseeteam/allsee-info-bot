@@ -53,7 +53,7 @@ async def handle_user_message(update: Update, context: ContextTypes.DEFAULT_TYPE
         config = {"configurable": {"thread_id": str(chat_id), "update": update}}
         # Using async streaming method with values stream mode which makes graph to return all state values after each step.
         # We can use ainvoke, but astream gives us ability to send text response to the user as soon as we get it from the graph.
-        async for event in context.application.graph_manager.get_graph().astream(
+        async for event in context.application.graph.astream(
             {
                 "messages": [
                     {"role": "user", "content": user_message}
