@@ -1,12 +1,23 @@
-version: '3.8'
-
 services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${CHECKPOINTER_POSTGRES_DB}
+      POSTGRES_USER: ${CHECKPOINTER_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${CHECKPOINTER_POSTGRES_PASSWORD}
+    volumes:
+      - ./data/graph-memory:/var/lib/postgresql/data
+    restart: unless-stopped
+
   bot:
     build: .
     env_file:
       - ./env/.env
+    environment:
+      CHECKPOINTER_POSTGRES_HOST: postgres
+    depends_on:
+      - postgres
     volumes:
-      - ${CHECKPOINTER_DB_URI:-./data/graph-memory/memory.sqlite3}:/app/${CHECKPOINTER_DB_URI:-data/graph-memory/memory.sqlite3}
       - ./data:/app/data
     restart: unless-stopped
     init: true
