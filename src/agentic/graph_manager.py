@@ -1,7 +1,6 @@
-from typing import Optional, Union, Literal
+from typing import Optional
 
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver, AsyncConnectionPool
-from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 from langgraph.graph import MessagesState, StateGraph, START
 from langgraph.graph.state import CompiledStateGraph
 
@@ -13,11 +12,9 @@ class GraphManager:
         self.graph_builder = StateGraph(MessagesState)
         self._setup_graph()
         self.compiled_graph: Optional[CompiledStateGraph] = None
-        self.saver: Optional[Union[AsyncSqliteSaver, AsyncPostgresSaver]] = None
-        self._pool = None
-        self._sqlite_ctx = None
-        self.db_type: str = None
-        self.db_uri: str = None
+        self.postgres_saver: Optional[AsyncPostgresSaver] = None
+        self._postgres_connection_pool = None
+        self.postgres_conn_string: str = None
     
 
     def _setup_graph(self):
@@ -28,47 +25,29 @@ class GraphManager:
         self.graph_builder.add_edge(START, "manager")
 
 
-    async def initialize(self, db_type: Literal["sqlite", "postgres"], db_uri: str):
-        """Store initialization parameters for later use"""
-        self.db_type = db_type
-        self.db_uri = db_uri
+    async def initialize(self, postgres_conn_string: str):
+        """Initialize the graph manager with Checkpointer PostgreSQL connection string"""
+        self.postgres_conn_string = postgres_conn_string
         return self
 
 
     async def __aenter__(self):
-        """Support for async context manager protocol"""
-        if self.db_type.lower() == "sqlite":
-            self._sqlite_ctx = AsyncSqliteSaver.from_conn_string(self.db_uri)
-            self.saver = await self._sqlite_ctx.__aenter__()
-
-        elif self.db_type.lower() == "postgres":
-            self._pool = await AsyncConnectionPool(conninfo=self.db_uri, kwargs={"autocommit": True}).__aenter__()
-            self.saver = AsyncPostgresSaver(self._pool)
-            await self.saver.setup()
-
-        else:
-            raise ValueError(f"Unsupported database type: {self.db_type}. Use 'sqlite' or 'postgres'.")
-        
-        self.compiled_graph = self.graph_builder.compile(checkpointer=self.saver)
+        """Initialize PostgreSQL connection pool and saver"""
+        self._postgres_connection_pool = await AsyncConnectionPool(conninfo=self.postgres_conn_string, kwargs={"autocommit": True}).__aenter__()
+        self.postgres_saver = AsyncPostgresSaver(self._postgres_connection_pool)
+        await self.postgres_saver.setup()
+        self.compiled_graph = self.graph_builder.compile(checkpointer=self.postgres_saver)
         return self
 
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        """Support for async context manager protocol cleanup"""
+        """Cleanup PostgreSQL connection pool"""
         self.compiled_graph = None
-
-        if self.saver:
-            if isinstance(self.saver, AsyncSqliteSaver) and self._sqlite_ctx:
-                # SQLite saver cleanup
-                await self._sqlite_ctx.__aexit__(exc_type, exc_val, exc_tb)
-                self._sqlite_ctx = None
-
-            elif self._pool:
-                # Postgres pool cleanup
-                await self._pool.__aexit__(exc_type, exc_val, exc_tb)
-                self._pool = None
-
-            self.saver = None
+        
+        if self.postgres_saver and self._postgres_connection_pool:
+            await self._postgres_connection_pool.__aexit__(exc_type, exc_val, exc_tb)
+            self._postgres_connection_pool = None
+            self.postgres_saver = None
 
 
     def get_graph(self) -> CompiledStateGraph:

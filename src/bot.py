@@ -49,7 +49,7 @@ async def setup_and_start_bot() -> None:
 
     # Initialize graph before starting bot
     logging.info("Initializing graph manager")
-    await graph_manager.initialize(settings.checkpointer.DB_TYPE, settings.checkpointer.DB_URI)
+    await graph_manager.initialize(postgres_conn_string=settings.checkpointer.POSGRES_CONNECTION_STRING)
 
     # Set up graph manager context
     async with graph_manager as manager:

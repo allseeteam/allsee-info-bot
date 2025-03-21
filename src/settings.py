@@ -52,17 +52,29 @@ class EmbedderSettings(BaseSettings):
 
 class CheckpointerSettings(BaseSettings):
     """
-    Class for storing LangGraph checkpointer settings
+    Class for storing LangGraph checkpointer settings with PostgreSQL configuration
 
     Attributes:
-        DB_TYPE (str): The type of database to use for checkpointing ("sqlite" or "postgres"). Default is "sqlite".
-        DB_URI (str): The URI for the database. For SQLite, this is the file path. For Postgres, this is the connection string.
+        POSTGRES_HOST (str): PostgreSQL host. Default is "localhost".
+        POSTGRES_PORT (int): PostgreSQL port. Default is 5432.
+        POSTGRES_DB (str): PostgreSQL database name. Default is "graph_memory".
+        POSTGRES_USER (str): PostgreSQL user.
+        POSTGRES_PASSWORD (str): PostgreSQL password.
+        DB_URI (property): Constructed PostgreSQL connection string.
     """
     model_config = SettingsConfigDict(env_prefix="CHECKPOINTER_", env_file="./env/.env", extra='ignore')
 
-    DB_TYPE: Literal["sqlite", "postgres"] = "sqlite"  # 'sqlite' or 'postgres'
-    DB_URI: str = "data/graph-memory/memory.sqlite3"  # SQLite file path or Postgres connection string    
-    
+    POSTGRES_HOST: str = "localhost"
+    POSTGRES_PORT: int = 5432
+    POSTGRES_DB: str = "checkpointer"
+    POSTGRES_USER: str = "checkpointer"
+    POSTGRES_PASSWORD: str
+
+    @property
+    def POSGRES_CONNECTION_STRING(self) -> str:
+        """Construct PostgreSQL connection string from settings"""
+        return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+
 
 class Settings(BaseSettings):
     telegram_bot: TelegramBotSettings = TelegramBotSettings()
