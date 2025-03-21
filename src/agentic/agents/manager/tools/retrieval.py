@@ -61,6 +61,7 @@ if has_existing_db:
             api_key=settings.embedder.API_KEY,
             model=settings.embedder.MODEL,
             base_url=settings.embedder.BASE_API,
+            openai_proxy=settings.embedder.PROXY_URL,
         ),
     )
     doc_count = vectorstore._collection.count()
@@ -78,6 +79,7 @@ if has_existing_db:
                 api_key=settings.embedder.API_KEY,
                 model=settings.embedder.MODEL,
                 base_url=settings.embedder.BASE_API,
+                openai_proxy=settings.embedder.PROXY_URL,
             ),
         )
         print(f"Created new vectorstore with {vectorstore._collection.count()} documents")
@@ -92,6 +94,7 @@ else:
             api_key=settings.embedder.API_KEY,
             model=settings.embedder.MODEL,
             base_url=settings.embedder.BASE_API,
+            openai_proxy=settings.embedder.PROXY_URL,
         ),
     )
     print(f"Created new vectorstore with {vectorstore._collection.count()} documents")

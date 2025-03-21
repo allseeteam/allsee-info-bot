@@ -32,6 +32,7 @@ class LLMSettings(BaseSettings):
     BASE_API: Optional[str] = None
     API_KEY: str
     MODEL: str = "gpt-4o-2024-08-06"
+    PROXY_URL: Optional[str] = None
 
 
 class EmbedderSettings(BaseSettings):
@@ -48,6 +49,7 @@ class EmbedderSettings(BaseSettings):
     BASE_API: Optional[str] = None
     API_KEY: str
     MODEL: str = "text-embedding-ada-002"
+    PROXY_URL: Optional[str] = None
 
 
 class CheckpointerSettings(BaseSettings):

@@ -1,4 +1,5 @@
 from langchain_openai import ChatOpenAI
+import httpx
 
 from ..settings import settings
 
@@ -8,4 +9,5 @@ llm: ChatOpenAI = ChatOpenAI(
     api_key=settings.llm.API_KEY,
     model=settings.llm.MODEL,
     base_url=settings.llm.BASE_API,
+    openai_proxy=settings.llm.PROXY_URL,
 )
