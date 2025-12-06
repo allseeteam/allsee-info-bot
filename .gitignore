@@ -1,5 +1,6 @@
 /venv
-/data
+/data/graph-memory
+/data/rag-chroma
 /env/.env
 /notebooks
 *__pycache__*
